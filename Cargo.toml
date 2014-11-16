@@ -1,0 +1,5 @@
+[package]
+
+name = "khovanov"
+version = "0.0.1"
+authors = ["Adele Dewey-Lopez <adele@deweylopez.org>"]
