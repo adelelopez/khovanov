@@ -8,12 +8,18 @@ pub struct Polynomial {
    pub terms: Vec<int>,
 }
 
+fn bounded(a: int, bound: uint) -> Option<uint> {
+   if a >= 0 && a < bound as int { Some(a as uint) } else { None }
+}
+
 impl PartialEq for Polynomial {
    fn eq(&self, other: &Polynomial) -> bool {
       for t in range(0, self.terms.len()) {
          let i = t as int + self.degree_shift - other.degree_shift;
-         let a = if i < 0 || i >= other.terms.len() as int { 0 }
-                  else { other.terms[i as uint] };
+         let a = match bounded(i, other.terms.len()) {
+            Some(num)   => other.terms[num],
+            None        => 0,
+         };
          if a != self.terms[t] { return false; }
       }
       true
@@ -48,10 +54,6 @@ impl fmt::Show for Polynomial {
       if i == shift { try!(write!(f,"0")) }
       Ok(())
    }
-}
-
-fn bounded(a: int, bound: uint) -> Option<uint> {
-   if a >= 0 && a < bound as int { Some(a as uint) } else { None }
 }
 
 impl Add<Polynomial, Polynomial> for Polynomial {
@@ -116,4 +118,88 @@ impl Sub<Polynomial, Polynomial> for Polynomial {
          terms: vec,
       }
    }
+}
+
+
+#[test]
+fn equality_over_degree_shifts () {
+   let p = Polynomial {
+      degree_shift: 3,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let q = Polynomial {
+      degree_shift: 0,
+      terms: vec![0i, 0i, 0i, 1i, 2i, 3i, 4i],
+   };
+   assert_eq!(p,q);
+}
+
+#[test]
+fn poly_plus_zero () {
+   let p = Polynomial {
+      degree_shift: 4,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let zero = Polynomial {
+      degree_shift: 0,
+      terms: vec![0i],
+   };
+   assert_eq!(p, p + zero);
+}
+
+#[test]
+fn twice_poly () {
+   let p = Polynomial {
+      degree_shift: 0,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let q = Polynomial {
+      degree_shift: 0,
+      terms: vec![2i, 4i, 6i, 8i],
+   };
+   assert_eq!(p + p, q);
+}
+
+#[test]
+fn additive_inverse () {
+    let p = Polynomial {
+      degree_shift: 0,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let q = Polynomial {
+      degree_shift: 0,
+      terms: vec![-1i, -2i, -3i, -4i],
+   };
+   let zero = Polynomial {
+      degree_shift: 4,
+      terms: vec![0i],
+   };
+   assert_eq!(p + q, zero);
+}
+
+#[test]
+fn subtract_from_self () {
+    let p = Polynomial {
+      degree_shift: 0,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+  
+   let zero = Polynomial {
+      degree_shift: 4,
+      terms: vec![0i],
+   };
+   assert_eq!(p - p, zero);
+}
+
+#[test]
+fn subtract_zero () {
+    let p = Polynomial {
+      degree_shift: 3,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let zero = Polynomial {
+      degree_shift: 4,
+      terms: vec![0i],
+   };
+   assert_eq!(p - zero, p);
 }
