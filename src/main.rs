@@ -1,5 +1,3 @@
-
-
 mod poly {
    use std::cmp;
    use std::fmt;
@@ -53,6 +51,10 @@ mod poly {
       }
    }
 
+   fn bounded(a: int, bound: uint) -> Option<uint> {
+      if a >= 0 && a < bound as int { Some(a as uint) } else { None }
+   }
+
    impl Add<Polynomial, Polynomial> for Polynomial {
       fn add(&self, rhs: &Polynomial) -> Polynomial {
          // shift is the degree_shift of the sum
@@ -67,10 +69,15 @@ mod poly {
          for t in range(0, degree - shift) {
             let ai = t + shift - self.degree_shift;
             let bi = t + shift - rhs.degree_shift;
-            let a = if ai < 0 || ai >= self.terms.len() as int { 0 } 
-                     else { self.terms[ai as uint] };
-            let b = if bi < 0 || bi >= rhs.terms.len() as int { 0 } 
-                     else { rhs.terms[bi as uint] };
+            let a = match bounded(ai, self.terms.len()) {
+               Some(num)   => self.terms[num],
+               None        => 0,
+            };
+            let b = match bounded(bi, rhs.terms.len()) {
+               Some(num)   => rhs.terms[num],
+               None        => 0,
+            };
+         
             vec.push(a+b);
          }
 
@@ -95,10 +102,14 @@ mod poly {
          for t in range(0, degree - shift) {
             let ai = t + shift - self.degree_shift;
             let bi = t + shift - rhs.degree_shift;
-            let a = if ai < 0 || ai >= self.terms.len() as int { 0 } 
-                     else { self.terms[ai as uint] };
-            let b = if bi < 0 || bi >= rhs.terms.len() as int { 0 } 
-                     else { rhs.terms[bi as uint] };
+            let a = match bounded(ai, self.terms.len()) {
+               Some(num)   => self.terms[num],
+               None        => 0,
+            };
+            let b = match bounded(bi, rhs.terms.len()) {
+               Some(num)   => rhs.terms[num],
+               None        => 0,
+            };
             vec.push(a-b);
          }
 
