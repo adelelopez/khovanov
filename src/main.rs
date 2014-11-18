@@ -1,19 +1,18 @@
 mod poly;
 
-
 #[cfg(not(test))]
 fn main() {
    let p = poly::Polynomial {
-      degree_shift: -1,
-      terms: vec![1i, 2, 0, -3],
+      degree_shift: 0,
+      terms: vec![1i, 0, 1],
    };
 
    let q = poly::Polynomial {
-      degree_shift: 4,
-      terms: vec![2i, 4, 0, -6],
+      degree_shift: 0,
+      terms: vec![3i],
    };
 
-   println!("{}", p + q);
+   println!("{}", p * q);
 } 
 
 

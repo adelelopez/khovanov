@@ -56,6 +56,20 @@ impl fmt::Show for Polynomial {
    }
 }
 
+impl Neg<Polynomial> for Polynomial {
+   fn neg(&self) -> Polynomial { 
+      let mut vec = Vec::new();
+      for t in self.terms.iter() {
+         vec.push(- *t);
+      }
+      Polynomial {
+         degree_shift: self.degree_shift,
+         terms: vec,
+      }
+   }
+}
+
+
 impl Add<Polynomial, Polynomial> for Polynomial {
    fn add(&self, rhs: &Polynomial) -> Polynomial {
       // shift is the degree_shift of the sum
@@ -90,33 +104,28 @@ impl Add<Polynomial, Polynomial> for Polynomial {
 
 impl Sub<Polynomial, Polynomial> for Polynomial {
    fn sub(&self, rhs: &Polynomial) -> Polynomial {
-      // shift is the degree_shift of the sum
-      let shift = cmp::min(self.degree_shift, rhs.degree_shift);
-      // degree is the degree of the sum
-      let degree = cmp::max::<int>(self.degree_shift + self.terms.len() as int, 
-                            rhs.degree_shift + rhs.terms.len() as int);
-      // so the difference degree - shift is the total size of the sum
-      let mut vec: Vec<int> = Vec::new();
-      vec.reserve((degree - shift) as uint);
-  
-      for t in range(0, degree - shift) {
-         let ai = t + shift - self.degree_shift;
-         let bi = t + shift - rhs.degree_shift;
-         let a = match bounded(ai, self.terms.len()) {
-            Some(num)   => self.terms[num],
-            None        => 0,
-         };
-         let b = match bounded(bi, rhs.terms.len()) {
-            Some(num)   => rhs.terms[num],
-            None        => 0,
-         };
-         vec.push(a-b);
-      }
+      - *rhs + *self
+   }
+}
 
-      Polynomial {
+
+impl Mul<Polynomial, Polynomial> for Polynomial {
+   fn mul(&self, rhs: &Polynomial) -> Polynomial {
+      let mut shift = self.degree_shift + rhs.degree_shift;
+      let mut p = Polynomial {
          degree_shift: shift,
-         terms: vec,
+         terms: Vec::new(),
+      };
+      for s in self.terms.iter() {
+         let vec = rhs.terms.iter().map(|&x| x * *s).collect::<Vec<int>>(); 
+         p = p + Polynomial {
+            degree_shift: shift,
+            terms: vec,
+         };
+         
+         shift += 1;
       }
+      p
    }
 }
 
@@ -202,4 +211,53 @@ fn subtract_zero () {
       terms: vec![0i],
    };
    assert_eq!(p - zero, p);
+}
+
+#[test]
+fn double_negative () {
+   let p = Polynomial {
+      degree_shift: 3,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   assert_eq!(- - p, p);
+}
+
+#[test]
+fn addition_subtraction () {
+   let p = Polynomial {
+      degree_shift: 0,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let q = Polynomial {
+      degree_shift: 0,
+      terms: vec![2i, 4i, 6i, 8i, 7i, 1i],
+   };
+   assert_eq!(-p + q, q - p);
+}
+
+#[test]
+fn mult_by_zero () {
+   let p = Polynomial {
+      degree_shift: 3,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let zero = Polynomial {
+      degree_shift: 0,
+      terms: vec![0i],
+   };
+   assert_eq!(p * zero, zero);
+}
+
+
+#[test]
+fn mult_by_one () {
+   let p = Polynomial {
+      degree_shift: -4,
+      terms: vec![1i, 2i, 3i, 4i],
+   };
+   let one = Polynomial {
+      degree_shift: 0,
+      terms: vec![1i],
+   };
+   assert_eq!(p * one, p);
 }
