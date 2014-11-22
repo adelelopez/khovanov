@@ -28,11 +28,14 @@ impl SetUnion {
       let r2 = self.find(b);
       if r1 == r2 { return };
 
+      // balance the sets
       let total_size = self.sizes[r1] + self.sizes[r2];
       if self.sizes[r1] >= self.sizes[r2] {
-         self.sizes[r1] = total_size
+         self.sizes[r1] = total_size;
+         self.parents[r2] = r1
       } else {
-         self.sizes[r2] = total_size
+         self.sizes[r2] = total_size;
+         self.parents[r1] = r2
       };
       self.components = self.components - 1;
    }

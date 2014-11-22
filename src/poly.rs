@@ -88,7 +88,6 @@ impl PartialEq for Polynomial {
       let shift = cmp::min(self.shift, rhs.shift);
       // degree is the degree of the sum
       let degree = cmp::max::<int>(self.degree(), rhs.degree());
-
       // so the difference degree - shift is the total size of the sum
       let value = range(0i, degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) ==
@@ -121,7 +120,6 @@ impl Sub<Polynomial, Polynomial> for Polynomial {
    fn sub(&self, rhs: &Polynomial) -> Polynomial {  
       let shift = cmp::min(self.shift, rhs.shift); 
       let degree = cmp::max::<int>(self.degree(), rhs.degree());
-
       let vec = range(0i, degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) -
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
