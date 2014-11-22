@@ -1,3 +1,4 @@
+#[cfg(test)]
 #[test]
 fn equality_over_degree_shifts () {
    let p = poly::new(vec![1i, 2i, 3i, 4i], 3);

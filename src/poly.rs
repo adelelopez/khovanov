@@ -1,6 +1,7 @@
 use std::cmp;
 use std::fmt;
 use std::num;
+//use std::iter;
 pub struct Polynomial {
    // Polynomials are represented as a vector of integers
    // terms[i] is the coefficient corresponding to q^(shift + i)
@@ -19,6 +20,11 @@ fn get_index_or_zero(a: int, t: &Vec<int>) -> int {
    if a >= 0 && a < t.len() as int { t[a as uint] } else { 0 }
 }
 
+impl Polynomial {
+   fn degree(&self) -> int {
+      self.shift + self.terms.len() as int
+   }
+}
 
 impl fmt::Show for Polynomial {
    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -50,15 +56,40 @@ impl fmt::Show for Polynomial {
    }
 }
 
+// fn foo<'r, T>(f: fn(int) -> T) -> iter::Map<'r, int, T, iter::Range<int>> {
+//     range(0, 1).map(|t| {
+//         f(t)
+//     })
+// }
+
+// macro_rules! linear_align(
+//    ($lhs:ident, $rhs:ident, $f:expr) => (
+//       let shift = cmp::min(lhs.shift, rhs.shift); 
+//       let degree = cmp::max::<int>(lhs.degree(), rhs.degree());
+//       range(0i, degree - shift).map(|t| { 
+//          f(get_index_or_zero(t + shift - lhs.shift, &lhs.terms),
+//            get_index_or_zero(t + shift - rhs.shift, &rhs.terms))
+//          } )
+//    )     
+// )
+
+// fn linear_align<'r,T>(lhs: &'r Polynomial, rhs: &'r Polynomial, f: |int, int| -> T) -> iter::Map<'r, int, T, iter::Range<int>> {
+//    let shift = cmp::min(lhs.shift, rhs.shift); 
+//    let degree = cmp::max::<int>(lhs.degree(), rhs.degree());
+//    range(0i, degree - shift).map(|t| { 
+//          f(get_index_or_zero(t + shift - lhs.shift, &lhs.terms),
+//            get_index_or_zero(t + shift - rhs.shift, &rhs.terms))
+//          } )
+// }
+
 impl PartialEq for Polynomial {
    fn eq(&self, rhs: &Polynomial) -> bool {
       // shift is the shift of the sum
       let shift = cmp::min(self.shift, rhs.shift);
       // degree is the degree of the sum
-      let degree = cmp::max::<int>(self.shift + self.terms.len() as int, 
-                            rhs.shift + rhs.terms.len() as int);
+      let degree = cmp::max::<int>(self.degree(), rhs.degree());
+
       // so the difference degree - shift is the total size of the sum
-   
       let value = range(0i, degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) ==
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
@@ -74,13 +105,10 @@ impl Neg<Polynomial> for Polynomial {
    }
 }
 
-
 impl Add<Polynomial, Polynomial> for Polynomial {
    fn add(&self, rhs: &Polynomial) -> Polynomial {  
       let shift = cmp::min(self.shift, rhs.shift); 
-      let degree = cmp::max::<int>(self.shift + self.terms.len() as int, 
-                            rhs.shift + rhs.terms.len() as int);
-
+      let degree = cmp::max::<int>(self.degree(), rhs.degree());
       let vec = range(0i, degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) +
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
@@ -92,9 +120,8 @@ impl Add<Polynomial, Polynomial> for Polynomial {
 impl Sub<Polynomial, Polynomial> for Polynomial {
    fn sub(&self, rhs: &Polynomial) -> Polynomial {  
       let shift = cmp::min(self.shift, rhs.shift); 
-      let degree = cmp::max::<int>(self.shift + self.terms.len() as int, 
-                            rhs.shift + rhs.terms.len() as int);
-      
+      let degree = cmp::max::<int>(self.degree(), rhs.degree());
+
       let vec = range(0i, degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) -
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
@@ -106,14 +133,12 @@ impl Sub<Polynomial, Polynomial> for Polynomial {
 impl Mul<Polynomial, Polynomial> for Polynomial {
    fn mul(&self, rhs: &Polynomial) -> Polynomial {
       let mut shift = self.shift + rhs.shift;
-      let mut p = new(Vec::new(), shift);
+      let mut product = new(Vec::new(), shift);
       for s in self.terms.iter() {
          let vec = rhs.terms.iter().map(|&x| x * *s).collect::<Vec<int>>(); 
-         p = p + new(vec, shift);
+         product = product + new(vec, shift);
          shift += 1;
       }
-      p
+      product
    }
 }
-
-
