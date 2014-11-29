@@ -21,8 +21,23 @@ fn get_index_or_zero(a: int, t: &Vec<int>) -> int {
 }
 
 impl Polynomial {
-   fn degree(&self) -> int {
+   pub fn degree(&self) -> int {
       self.shift + self.terms.len() as int
+   }
+
+   pub fn shift(&self, shift: int) -> Polynomial {
+      Polynomial {
+         terms: self.terms.clone(),
+         shift: self.shift.clone() + shift,
+      }
+   }
+
+   pub fn pow(&self, exp: uint) -> Polynomial {
+      let mut ret = new(vec![1],0);
+      for i in range(0,exp) {
+         ret = ret * *self;
+      }
+      ret
    }
 }
 

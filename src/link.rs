@@ -1,5 +1,8 @@
 use set_union;
+use poly;
 use std::cmp;
+use std::num::Int;
+use std::collections::BitvSet;
 
 pub mod cross {
    pub struct X {
@@ -79,5 +82,28 @@ impl Link {
          i = i + 1;
       }
       s.num_components()
+   }
+
+   pub fn jones(&self) -> poly::Polynomial {
+      let v = poly::new(vec![1,0,1],-1);
+      let n: uint = 1 << self.crosses.len();
+      let mut ret: poly::Polynomial = poly::new(vec![0],0);
+      let mut height: uint;
+      let mut dim: uint;
+      for i in range(0,n) {
+         dim = self.count_loops(i);
+         height = i.count_ones();
+         ret = ret + if (height % 2) == 0 {
+            v.pow(dim).shift(height as int) 
+         } else
+         {
+            -v.pow(dim).shift(height as int) 
+         };
+      }
+      if (self.nm % 2) == 0 {
+         ret
+      } else {
+         -ret
+      }.shift(self.np as int - 2 * self.nm as int)
    }
 }
