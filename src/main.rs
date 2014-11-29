@@ -10,9 +10,9 @@ mod tests;
 
 #[cfg(not(test))]
 fn main() {
-   let p = poly::new(vec![1,0,1],-1);
+   let trefoil = link::Link::new(vec![link::cross::X::new(1,5,2,4), link::cross::X::new(5,3,6,2), link::cross::X::new(3,1,4,6)]);
 
-   println!("{}", p * p);
+   println!("{}", trefoil.count_loops(7));
 } 
 
 
