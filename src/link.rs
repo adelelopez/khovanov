@@ -2,7 +2,6 @@ use set_union;
 use poly;
 use std::cmp;
 use std::num::Int;
-use std::collections::BitvSet;
 
 pub mod cross {
    pub struct X {
@@ -73,11 +72,11 @@ impl Link {
       let mut i = 0;
       for x in self.crosses.iter() {
          if (smoothing & 1 << i) != 0 {
-            s.merge(x.i - 1, x.l - 1);
-            s.merge(x.j - 1, x.k - 1);
+            s.union(x.i - 1, x.l - 1);
+            s.union(x.j - 1, x.k - 1);
          } else {
-            s.merge(x.i - 1, x.j - 1);
-            s.merge(x.k - 1, x.l - 1);
+            s.union(x.i - 1, x.j - 1);
+            s.union(x.k - 1, x.l - 1);
          }
          i = i + 1;
       }

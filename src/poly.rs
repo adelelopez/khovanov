@@ -1,12 +1,16 @@
 use std::cmp;
 use std::fmt;
 use std::num;
-//use std::iter;
+
 pub struct Polynomial {
    // Polynomials are represented as a vector of integers
    // terms[i] is the coefficient corresponding to q^(shift + i)
    terms: Vec<int>,
    shift: int, 
+}
+
+fn get_index_or_zero(a: int, t: &Vec<int>) -> int {
+   if a >= 0 && a < t.len() as int { t[a as uint] } else { 0 }
 }
 
 pub fn new(terms: Vec<int>, shift: int) -> Polynomial {
@@ -16,11 +20,8 @@ pub fn new(terms: Vec<int>, shift: int) -> Polynomial {
    }
 }
 
-fn get_index_or_zero(a: int, t: &Vec<int>) -> int {
-   if a >= 0 && a < t.len() as int { t[a as uint] } else { 0 }
-}
-
 impl Polynomial {
+
    pub fn degree(&self) -> int {
       self.shift + self.terms.len() as int
    }
@@ -34,7 +35,7 @@ impl Polynomial {
 
    pub fn pow(&self, exp: uint) -> Polynomial {
       let mut ret = new(vec![1],0);
-      for i in range(0,exp) {
+      for _ in range(0,exp) {
          ret = ret * *self;
       }
       ret

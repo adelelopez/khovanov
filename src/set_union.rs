@@ -1,3 +1,4 @@
+// a basic disjoint set data structure, with fast lookup and fast union 
 pub struct SetUnion {
    parents: Vec<uint>,
    sizes: Vec<uint>,
@@ -8,7 +9,7 @@ pub fn new(size: uint) -> SetUnion {
    SetUnion {
       parents: range(0,size).collect::<Vec<uint>>(),
       sizes: Vec::from_fn(size, |_| 1u),
-      components: if size == 0 { 1 } else { size },
+      components: size,
    }
 }
 
@@ -23,7 +24,7 @@ impl SetUnion {
       return x
    }
 
-   pub fn merge(&mut self, a: uint, b: uint) {
+   pub fn union(&mut self, a: uint, b: uint) {
       let r1 = self.find(a);
       let r2 = self.find(b);
       if r1 == r2 { return };

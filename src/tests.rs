@@ -1,4 +1,3 @@
-#[cfg(test)]
 use poly;
 
 #[test]
@@ -73,7 +72,6 @@ fn mult_by_zero () {
    assert_eq!(p * zero, zero);
 }
 
-
 #[test]
 fn mult_by_one () {
    let p = poly::new(vec![1i, 2i, 3i, 4i], -4);
@@ -93,3 +91,25 @@ fn multiplication () {
    
    assert_eq!(p * q, pq);
 }
+
+#[test]
+fn test_shift () {
+   let p = poly::new(vec![0i, 1i, 3i, 7i], 0);
+      
+   let q = poly::new(vec![1i, 3i, 7i], 0);
+
+   assert_eq!(p, q.shift(1));
+}
+
+#[test]
+fn test_pow () {
+   let p = poly::new(vec![0i, 1i, 3i, 7i], 0);
+   let one = poly::new(vec![1i], 0);
+
+   assert_eq!(p.pow(0), one);
+   assert_eq!(p.pow(1), p);
+   assert_eq!(p.pow(2), p * p);
+   assert_eq!(p.pow(3), p * p * p);
+}
+// link module tests
+
