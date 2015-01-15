@@ -1,4 +1,3 @@
-#![feature(macro_rules)]
 mod poly;
 #[allow(dead_code)]
 mod set_union;

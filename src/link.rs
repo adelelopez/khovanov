@@ -5,15 +5,15 @@ use std::num::Int;
 
 pub mod cross {
    pub struct X {
-      pub i: uint,
-      pub j: uint, 
-      pub k: uint,
-      pub l: uint,
-      sign: int,
+      pub i: usize,
+      pub j: usize, 
+      pub k: usize,
+      pub l: usize,
+      sign: i32,
    }
 
    impl X {
-      pub fn new(i: uint, j: uint, k: uint, l: uint) -> X {
+      pub fn new(i: usize, j: usize, k: usize, l: usize) -> X {
          X {
             i: i,
             j: j,
@@ -23,7 +23,7 @@ pub mod cross {
          }
       }
 
-      pub fn get_sign(&self) -> int {
+      pub fn get_sign(&self) -> i32 {
 
          if self.sign == 0 {
             match (self.j, self.l) {
@@ -40,19 +40,19 @@ pub mod cross {
 }
 
 pub struct Link {
-   np: uint,
-   nm: uint,
-   edges: uint,
+   np: usize,
+   nm: usize,
+   edges: usize,
    crosses: Vec<cross::X>,
 }
 
 impl Link {
    pub fn new(v: Vec<cross::X>) -> Link {
-      let mut nm = 0u;
-      let mut np = 0u;
-      let mut edges = 0u;
+      let mut nm = 0;
+      let mut np = 0;
+      let mut edges = 0;
       for x in v.iter() {
-         edges = [x.i,x.j,x.k,x.l,edges].iter().fold(0u, |max, i| cmp::max(max,*i));
+         edges = [x.i,x.j,x.k,x.l,edges].iter().fold(0, |max, i| cmp::max(max,*i));
          if x.get_sign() == 1 {
             np = np + 1 
          } else {
@@ -67,7 +67,7 @@ impl Link {
       }
    }
 
-   pub fn count_loops(&self, smoothing: uint) -> uint {
+   pub fn count_loops(&self, smoothing: usize) -> usize {
       let mut s = set_union::new(self.edges);
       let mut i = 0;
       for x in self.crosses.iter() {
@@ -85,24 +85,24 @@ impl Link {
 
    pub fn jones(&self) -> poly::Polynomial {
       let v = poly::new(vec![1,0,1],-1);
-      let n: uint = 1 << self.crosses.len();
+      let n: usize = 1 << self.crosses.len();
       let mut ret: poly::Polynomial = poly::new(vec![0],0);
-      let mut height: uint;
-      let mut dim: uint;
+      let mut height: usize;
+      let mut dim: usize;
       for i in range(0,n) {
          dim = self.count_loops(i);
-         height = i.count_ones();
+         height = i.count_ones() as usize;
          ret = ret + if (height % 2) == 0 {
-            v.pow(dim).shift(height as int) 
+            v.pow(dim).shift(height as i32) 
          } else
          {
-            -v.pow(dim).shift(height as int) 
+            -v.pow(dim).shift(height as i32) 
          };
       }
       if (self.nm % 2) == 0 {
          ret
       } else {
          -ret
-      }.shift(self.np as int - 2 * self.nm as int)
+      }.shift(self.np as i32 - 2 * self.nm as i32)
    }
 }

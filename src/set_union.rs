@@ -1,20 +1,22 @@
+use std::iter;
+
 // a basic disjoint set data structure, with fast lookup and fast union 
 pub struct SetUnion {
-   parents: Vec<uint>,
-   sizes: Vec<uint>,
-   components: uint,
+   parents: Vec<usize>,
+   sizes: Vec<usize>,
+   components: usize,
 }
 
-pub fn new(size: uint) -> SetUnion {
+pub fn new(size: usize) -> SetUnion {
    SetUnion {
-      parents: range(0,size).collect::<Vec<uint>>(),
-      sizes: Vec::from_fn(size, |_| 1u),
+      parents: range(0,size).collect::<Vec<usize>>(),
+      sizes: iter::FromIterator::from_iter(iter::repeat(1).take(size)),
       components: size,
    }
 }
 
 impl SetUnion {
-   pub fn find(&mut self, y: uint) -> uint {
+   pub fn find(&mut self, y: usize) -> usize {
       let mut x = y;
       while x != self.parents[x] {
          // compress path
@@ -24,7 +26,7 @@ impl SetUnion {
       return x
    }
 
-   pub fn union(&mut self, a: uint, b: uint) {
+   pub fn union(&mut self, a: usize, b: usize) {
       let r1 = self.find(a);
       let r2 = self.find(b);
       if r1 == r2 { return };
@@ -41,7 +43,7 @@ impl SetUnion {
       self.components = self.components - 1;
    }
 
-   pub fn num_components(&self) -> uint {
+   pub fn num_components(&self) -> usize {
       self.components
    }
 }
