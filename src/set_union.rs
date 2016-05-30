@@ -9,7 +9,7 @@ pub struct SetUnion {
 
 pub fn new(size: usize) -> SetUnion {
    SetUnion {
-      parents: range(0,size).collect::<Vec<usize>>(),
+      parents: (0..size).collect::<Vec<usize>>(),
       sizes: iter::FromIterator::from_iter(iter::repeat(1).take(size)),
       components: size,
    }

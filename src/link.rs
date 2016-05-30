@@ -1,7 +1,6 @@
 use set_union;
 use poly;
 use std::cmp;
-use std::num::Int;
 
 pub mod cross {
    pub struct X {
@@ -40,8 +39,8 @@ pub mod cross {
 }
 
 pub struct Link {
-   np: usize,
-   nm: usize,
+   np: i32,
+   nm: i32,
    edges: usize,
    crosses: Vec<cross::X>,
 }
@@ -89,7 +88,7 @@ impl Link {
       let mut ret: poly::Polynomial = poly::new(vec![0],0);
       let mut height: usize;
       let mut dim: usize;
-      for i in range(0,n) {
+      for i in 0..n {
          dim = self.count_loops(i);
          height = i.count_ones() as usize;
          ret = ret + if (height % 2) == 0 {
@@ -103,6 +102,6 @@ impl Link {
          ret
       } else {
          -ret
-      }.shift(self.np as i32 - 2 * self.nm as i32)
+      }.shift(self.np  - 2 * self.nm)
    }
 }

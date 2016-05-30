@@ -1,11 +1,11 @@
 use std::cmp;
 use std::fmt;
-use std::num;
 use std::ops::Neg;
 use std::ops::Mul;
 use std::ops::Add;
 use std::ops::Sub; 
 
+#[derive(Clone, Debug)]
 pub struct Polynomial {
    // Polynomials are represented as a vector of i32egers
    // terms[i] is the coefficient corresponding to q^(shift + i)
@@ -40,7 +40,7 @@ impl Polynomial {
    pub fn pow(&self, exp: usize) -> Polynomial {
       
       let mut ret = new(vec![1],0);
-      for _ in range(0,exp) {
+      for _ in 0..exp {
          let p = new(self.terms.clone(),self.shift.clone());
          ret = ret * p;
       }
@@ -48,7 +48,7 @@ impl Polynomial {
    }
 }
 
-impl fmt::String for Polynomial {
+impl fmt::Display for Polynomial {
    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
       let shift = self.shift;
       let mut i = shift;
@@ -63,8 +63,8 @@ impl fmt::String for Polynomial {
 
             // don't write the coefficient if it is +/- 1
             // unless it is the constant term
-            if num::SignedInt::abs(*t) != 1 || i == 0 { 
-               try!(write!(f,"{}", num::SignedInt::abs(*t)))
+            if (*t).abs() != 1 || i == 0 { 
+               try!(write!(f,"{}", (*t).abs()))
             }
             // use 'q' as the variable
             if i == 1 { try!(write!(f,"q")) }
@@ -111,7 +111,7 @@ impl PartialEq for Polynomial {
       // degree is the degree of the sum
       let degree = cmp::max::<i32>(self.degree(), rhs.degree());
       // so the difference degree - shift is the total 32 of the sum
-      let value = range(0, degree - shift).map(|t| {
+      let value = (0..degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) ==
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
          } ).fold(true, |value, x| value && x);
@@ -132,7 +132,7 @@ impl Add for Polynomial {
    fn add(self, rhs: Polynomial) -> Polynomial {  
       let shift = cmp::min(self.shift, rhs.shift); 
       let degree = cmp::max::<i32>(self.degree(), rhs.degree());
-      let vec = range(0, degree - shift).map(|t| {
+      let vec = (0..degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) +
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
          } ).collect::<Vec<i32>>();
@@ -145,7 +145,7 @@ impl Sub<Polynomial> for Polynomial {
    fn sub(self, rhs: Polynomial) -> Polynomial {  
       let shift = cmp::min(self.shift, rhs.shift); 
       let degree = cmp::max::<i32>(self.degree(), rhs.degree());
-      let vec = range(0, degree - shift).map(|t| {
+      let vec = (0..degree - shift).map(|t| {
             get_index_or_zero(t + shift - self.shift, &self.terms) -
             get_index_or_zero(t + shift - rhs.shift, &rhs.terms)
          } ).collect::<Vec<i32>>();
